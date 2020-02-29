@@ -2,3 +2,7 @@ img {
   max-height: 200px;
   max-width: 100%;
 }
+
+li a {
+  cursor: pointer;
+}

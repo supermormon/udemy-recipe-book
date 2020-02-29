@@ -1,32 +1,48 @@
 import { Ingredient } from "../shared/ingrdient.model";
 import { Injectable, EventEmitter } from "@angular/core";
+import { Subject } from "rxjs";
 
 @Injectable({
-   providedIn: 'root'
+  providedIn: 'root'
 })
 export class ShoppingListService {
-   ingredientsChanged = new EventEmitter<Ingredient[]>();
+  ingredientsChanged = new Subject<Ingredient[]>();
+  startedEditing = new Subject<number>();
 
-   private ingredients: Ingredient[] = [
-      new Ingredient('apples', 3),
-      new Ingredient('tomatoes', 5)
-   ];
+  private ingredients: Ingredient[] = [
+    new Ingredient('apples', 3),
+    new Ingredient('tomatoes', 5)
+  ];
 
-   getShoppingList() {
-      return this.ingredients.slice();
-   }
+  notifyChange() {
+    this.ingredientsChanged.next(this.ingredients.slice());
+  }
 
-   addIngredient(ingredient: Ingredient) {
-      this.ingredients.push(ingredient);
-      this.ingredientsChanged.emit(this.ingredients.slice());
-   }
-   
-   addIngredients(ingredients: Ingredient[]) {
-      this.ingredients.push(...ingredients);
-      this.ingredientsChanged.emit(this.ingredients.slice());
-   }
+  getShoppingList() {
+    return this.ingredients.slice();
+  }
 
-   deleteIngredient() {
+  getIngredient(id: number): Ingredient {
+    return this.ingredients[id];
+  }
 
-   }
+  addIngredient(ingredient: Ingredient) {
+    this.ingredients.push(ingredient);
+    this.notifyChange();
+  }
+
+  addIngredients(ingredients: Ingredient[]) {
+    this.ingredients.push(...ingredients);
+    this.notifyChange();
+  }
+
+  updateIngredient(index: number, ingrdient: Ingredient) {
+    this.ingredients[index] = ingrdient;
+    this.notifyChange();
+  }
+
+  deleteIngredient(index: number) {
+    this.ingredients.splice(index, 1);
+    this.notifyChange();
+  }
 }
